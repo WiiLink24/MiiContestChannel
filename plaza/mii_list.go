@@ -129,5 +129,7 @@ func MakeList(listType common.ListTag, miis []common.MiiWithArtisan, filename st
 
 	list.Header = header
 	list.Miis = miiPair
-	return common.Write(list, "151/"+filename)
+	common.Write(list, "151/"+filename)
+	list.Header.CountryRegion = 0
+	return common.Write(list, "0"/+filename)
 }
