@@ -29,13 +29,12 @@ func MakeSpotList(pool *pgxpool.Pool, ctx context.Context) error {
 		return err
 	}
 
-	// The list can only have 100 miis. If there are less than 100 miis, we will fix with random miis with have a
-	// high perm like count.
+	// Based on original footage, Nintendo had 10 popular Mii pages. There are 50 Miis per page.
 	var extraCount int
-	if numberOfMiisWithLikes > 100 {
-		numberOfMiisWithLikes = 100
+	if numberOfMiisWithLikes > 500 {
+		numberOfMiisWithLikes = 500
 	} else {
-		extraCount = 100 - numberOfMiisWithLikes
+		extraCount = 500 - numberOfMiisWithLikes
 	}
 
 	// First handle popular
