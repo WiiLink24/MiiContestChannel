@@ -177,7 +177,7 @@ func MakeContestInfos(pool *pgxpool.Pool, ctx context.Context) error {
 			contest.Status = DatabaseStatusToContestStatus(status)
 		}
 
-		if contest.Status != CCLosed {
+		if contest.Status != CCLosed && status != Waiting {
 			err = MakeContestDetail(pool, ctx, contest.ContestID, openTime, closeTime, description, contest.Status)
 			if err != nil {
 				return err
