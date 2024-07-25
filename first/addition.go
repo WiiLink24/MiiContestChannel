@@ -56,7 +56,7 @@ type MarqueeField struct {
 }
 
 //go:embed addition.json
-var additionJson []byte
+var AdditionJson []byte
 
 func (a Addition) ToBytes(any) []byte {
 	buffer := new(bytes.Buffer)
@@ -92,7 +92,7 @@ func MakeAddition() error {
 	copy(actual[:], marqueeText)
 
 	var root Root
-	err := json.Unmarshal(additionJson, &root)
+	err := json.Unmarshal(AdditionJson, &root)
 	if err != nil {
 		return err
 	}

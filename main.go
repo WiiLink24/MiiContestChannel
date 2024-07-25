@@ -51,4 +51,7 @@ func main() {
 
 	err = plaza.MakeNumberInfo(pool, ctx)
 	common.CheckError(err)
+
+	err = plaza.MakeSelectList(pool, ctx)
+	common.CheckError(err)
 }

@@ -30,6 +30,7 @@ var (
 	OwnSearch       = ListTag{'O', 'S'}
 	NameSearch      = ListTag{'N', 'S'}
 	Search          = ListTag{'S', 'R'}
+	SelectList      = ListTag{'L', 'L'}
 )
 
 // LanguageFlag is a bitmask that allows for toggling supported languages for a country.
