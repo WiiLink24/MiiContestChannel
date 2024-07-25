@@ -4,6 +4,7 @@ import (
 	"bytes"
 	_ "embed"
 	"encoding/json"
+	"fmt"
 	"github.com/WiiLink24/MiiContestChannel/common"
 	"math"
 )
@@ -74,6 +75,17 @@ func (a Addition) ToBytes(any) []byte {
 	return buffer.Bytes()
 }
 
+func GetSupportedLanguagesForRegion(region uint32) []uint32 {
+	switch region {
+	case 2:
+		return []uint32{1, 3, 4}
+	case 3:
+		return []uint32{1, 2, 3, 4, 5, 6}
+	}
+
+	return []uint32{0}
+}
+
 func MakeAddition() error {
 	marqueeText := []byte("WiiLink Mii Contest Channel!!!!")
 	var actual [1536]byte
@@ -85,45 +97,55 @@ func MakeAddition() error {
 		return err
 	}
 
-	addition := Addition{
-		Header: AdditionHeader{
-			Type:         [2]byte{'A', 'D'},
-			CountryGroup: 201,
-			Padding:      [8]byte{math.MaxUint8, math.MaxUint8, math.MaxUint8, math.MaxUint8, math.MaxUint8, math.MaxUint8, math.MaxUint8, math.MaxUint8},
-		},
-		Countries: []CountryField{},
-		Skills:    []SkillField{},
-		MarqueeField: MarqueeField{
-			Tag:         [2]byte{'N', 'W'},
-			SectionSize: 1544,
-			Unknown:     1,
-			Text:        actual,
-		},
+	for i := uint32(1); i < 4; i++ {
+		for _, u := range GetSupportedLanguagesForRegion(i) {
+			addition := Addition{
+				Header: AdditionHeader{
+					Type:         [2]byte{'A', 'D'},
+					CountryGroup: 100*i + u,
+					Padding:      [8]byte{math.MaxUint8, math.MaxUint8, math.MaxUint8, math.MaxUint8, math.MaxUint8, math.MaxUint8, math.MaxUint8, math.MaxUint8},
+				},
+				Countries: []CountryField{},
+				Skills:    []SkillField{},
+				MarqueeField: MarqueeField{
+					Tag:         [2]byte{'N', 'W'},
+					SectionSize: 1544,
+					Unknown:     1,
+					Text:        actual,
+				},
+			}
+
+			// TODO: Localize this
+			for _, country := range root.Countries {
+				var text [192]byte
+				copy(text[:], country.Name)
+
+				addition.Countries = append(addition.Countries, CountryField{
+					Type:        [2]byte{'N', 'H'},
+					FieldSize:   200,
+					CountryCode: country.Code,
+					Text:        text,
+				})
+			}
+
+			for _, skill := range root.Skills {
+				var text [96]byte
+				copy(text[:], skill.Name)
+
+				addition.Skills = append(addition.Skills, SkillField{
+					Type:      [2]byte{'N', 'J'},
+					FieldSize: 104,
+					SkillId:   skill.Code,
+					Text:      text,
+				})
+			}
+
+			err = common.Write(addition, fmt.Sprintf("addition/%d.ces", 100*i+u))
+			if err != nil {
+				return err
+			}
+		}
 	}
 
-	for _, country := range root.Countries {
-		var text [192]byte
-		copy(text[:], country.Name)
-
-		addition.Countries = append(addition.Countries, CountryField{
-			Type:        [2]byte{'N', 'H'},
-			FieldSize:   200,
-			CountryCode: country.Code,
-			Text:        text,
-		})
-	}
-
-	for _, skill := range root.Skills {
-		var text [96]byte
-		copy(text[:], skill.Name)
-
-		addition.Skills = append(addition.Skills, SkillField{
-			Type:      [2]byte{'N', 'J'},
-			FieldSize: 104,
-			SkillId:   skill.Code,
-			Text:      text,
-		})
-	}
-
-	return common.Write(addition, "addition/201.ces")
+	return nil
 }

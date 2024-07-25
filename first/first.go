@@ -53,7 +53,7 @@ func GetSupportedLanguages(countryCode uint8) common.LanguageFlag {
 		return common.English | common.German | common.French | common.Spanish | common.Italian | common.Dutch
 	}
 
-	return common.Japanese | common.English | common.German | common.French | common.Spanish | common.Italian | common.Dutch
+	return common.Japanese
 }
 
 func MakeFirst() error {
