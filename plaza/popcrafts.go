@@ -38,7 +38,7 @@ type ExtendedArtisan struct {
 	_                  uint8
 	IsMasterMiiArtisan uint8
 	Popularity         uint8
-	_                  uint8
+	Arrow              uint8
 	CountryCode        uint16
 	_                  uint16
 	RK
