@@ -123,6 +123,7 @@ func MakeContestInfos(pool *pgxpool.Pool, ctx context.Context) error {
 			}
 
 			contest.Status = COpen
+			status = Open
 		} else if openTime.Before(time.Now()) && closeTime.Before(time.Now()) {
 			if status == Open {
 				// Set to judging. Contest will be open to judging for 7 days.
