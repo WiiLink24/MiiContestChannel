@@ -54,4 +54,7 @@ func main() {
 
 	err = plaza.MakeSelectList(pool, ctx)
 	common.CheckError(err)
+
+	err = plaza.WriteWiiSportsResortMiis(pool, ctx)
+	common.CheckError(err)
 }
