@@ -14,7 +14,7 @@ type ContestDetail struct {
 	Tag            common.ListTag
 	_              uint16
 	ContestID      uint32
-	Unknown        uint32
+	Language       uint32
 	_              [8]byte
 	StartTimestamp uint32
 	EndTimestamp   uint32
@@ -69,24 +69,31 @@ func MakeContestDetail(pool *pgxpool.Pool, ctx context.Context, contestId uint32
 		options |= SpecialAward
 	}
 
-	detail := ContestDetail{
-		Tag:            common.ContestDetail,
-		ContestID:      contestId,
-		Unknown:        1,
-		StartTimestamp: uint32(startTime.Unix() - 946684800),
-		EndTimestamp:   uint32(endTime.Unix() - 946684800),
-		Padding:        [4]byte{math.MaxUint8, math.MaxUint8, math.MaxUint8, math.MaxUint8},
-		CDTag:          common.ContestDetail,
-		TagSize:        136,
-		Unknown2:       1,
-		ContestID2:     contestId,
-		Status:         status,
-		Options:        options,
-		EntryCount:     entryCount,
-		Padding2:       [20]byte{},
-		Topic:          topic,
-		Description:    tempDescription,
+	for i := uint32(0); i < 7; i++ {
+		detail := ContestDetail{
+			Tag:            common.ContestDetail,
+			ContestID:      contestId,
+			Language:       i,
+			StartTimestamp: uint32(startTime.Unix() - 946684800),
+			EndTimestamp:   uint32(endTime.Unix() - 946684800),
+			Padding:        [4]byte{math.MaxUint8, math.MaxUint8, math.MaxUint8, math.MaxUint8},
+			CDTag:          common.ContestDetail,
+			TagSize:        136,
+			Unknown2:       1,
+			ContestID2:     contestId,
+			Status:         status,
+			Options:        options,
+			EntryCount:     entryCount,
+			Padding2:       [20]byte{},
+			Topic:          topic,
+			Description:    tempDescription,
+		}
+
+		err := common.Write(detail, fmt.Sprintf("contest/%d/con_detail%d.ces", contestId, i))
+		if err != nil {
+			return err
+		}
 	}
 
-	return common.Write(detail, fmt.Sprintf("contest/%d/con_detail1.ces", contestId))
+	return nil
 }
