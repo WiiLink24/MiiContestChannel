@@ -10,6 +10,20 @@ import (
 )
 
 type Root struct {
+	Regions []Languages `json:"regions"`
+}
+
+type Languages struct {
+	Japanese *Entry `json:"0"`
+	English  *Entry `json:"1"`
+	German   *Entry `json:"2"`
+	French   *Entry `json:"3"`
+	Spanish  *Entry `json:"4"`
+	Italian  *Entry `json:"5"`
+	Dutch    *Entry `json:"6"`
+}
+
+type Entry struct {
 	Countries []Child `json:"countries"`
 	Skills    []Child `json:"skills"`
 }
@@ -86,6 +100,28 @@ func GetSupportedLanguagesForRegion(region uint32) []uint32 {
 	return []uint32{0}
 }
 
+func (l *Languages) GetLanguageFromJSON(language uint32) *Entry {
+	switch language {
+	case 0:
+		return l.Japanese
+	case 1:
+		return l.English
+	case 2:
+		return l.German
+	case 3:
+		return l.French
+	case 4:
+		return l.Spanish
+	case 5:
+		return l.Italian
+	case 6:
+		return l.Dutch
+	}
+
+	// Should never reach here
+	return nil
+}
+
 func MakeAddition() error {
 	marqueeText := []byte("WiiLink Mii Contest Channel!!!!")
 	var actual [1536]byte
@@ -115,8 +151,8 @@ func MakeAddition() error {
 				},
 			}
 
-			// TODO: Localize this
-			for _, country := range root.Countries {
+			currentLanguage := root.Regions[i-1].GetLanguageFromJSON(u)
+			for _, country := range currentLanguage.Countries {
 				var text [192]byte
 				copy(text[:], country.Name)
 
@@ -128,7 +164,7 @@ func MakeAddition() error {
 				})
 			}
 
-			for _, skill := range root.Skills {
+			for _, skill := range currentLanguage.Skills {
 				var text [96]byte
 				copy(text[:], skill.Name)
 

@@ -24,9 +24,9 @@ func MakeSelectList(pool *pgxpool.Pool, ctx context.Context) error {
 	for i := 1; i <= 2; i++ {
 		// Male = 1
 		// Female = 2
-		for _, skill := range root.Skills {
+		for code := uint32(1); code < 20; code++ {
 			var miis []common.MiiWithArtisan
-			rows, err := pool.Query(ctx, GetMiisBySkillAndGender, skill.Code, i)
+			rows, err := pool.Query(ctx, GetMiisBySkillAndGender, code, i)
 			if err != nil {
 				return err
 			}
@@ -51,7 +51,7 @@ func MakeSelectList(pool *pgxpool.Pool, ctx context.Context) error {
 			}
 
 			rows.Close()
-			listNumber := skill.Code*10 + uint32(i)
+			listNumber := code*10 + uint32(i)
 			err = MakeList(common.SelectList, miis, fmt.Sprintf("select_list%03d.ces", listNumber), &listNumber)
 			if err != nil {
 				return err
