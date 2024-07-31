@@ -36,7 +36,7 @@ func (c ContestDetail) ToBytes(data any) []byte {
 	return common.ToBytes(data)
 }
 
-func MakeContestDetail(pool *pgxpool.Pool, ctx context.Context, contestId uint32, startTime, endTime *time.Time, description string, status ContestStatus) error {
+func MakeContestDetailData(pool *pgxpool.Pool, ctx context.Context, contestId uint32, startTime, endTime *time.Time, description string, status ContestStatus) (*ContestDetail, error) {
 	// Get entry numbers
 	var entryCount uint32
 	var hasThumbnail bool
@@ -44,12 +44,12 @@ func MakeContestDetail(pool *pgxpool.Pool, ctx context.Context, contestId uint32
 	if status != COpen {
 		err := pool.QueryRow(ctx, GetNumberOfContestMiis, contestId).Scan(&entryCount, &hasThumbnail, &hasSpecialAward)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	} else {
 		err := pool.QueryRow(ctx, GetContestThumbnailStatus, contestId).Scan(&hasThumbnail, &hasSpecialAward)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
@@ -69,31 +69,29 @@ func MakeContestDetail(pool *pgxpool.Pool, ctx context.Context, contestId uint32
 		options |= SpecialAward
 	}
 
-	for i := uint32(0); i < 7; i++ {
-		detail := ContestDetail{
-			Tag:            common.ContestDetail,
-			ContestID:      contestId,
-			Language:       i,
-			StartTimestamp: uint32(startTime.Unix() - 946684800),
-			EndTimestamp:   uint32(endTime.Unix() - 946684800),
-			Padding:        [4]byte{math.MaxUint8, math.MaxUint8, math.MaxUint8, math.MaxUint8},
-			CDTag:          common.ContestDetail,
-			TagSize:        136,
-			Unknown2:       1,
-			ContestID2:     contestId,
-			Status:         status,
-			Options:        options,
-			EntryCount:     entryCount,
-			Padding2:       [20]byte{},
-			Topic:          topic,
-			Description:    tempDescription,
-		}
-
-		err := common.Write(detail, fmt.Sprintf("contest/%d/con_detail%d.ces", contestId, i))
-		if err != nil {
-			return err
-		}
+	detail := ContestDetail{
+		Tag:       common.ContestDetail,
+		ContestID: contestId,
+		// Gets changed by contest_info.go
+		Language:       0,
+		StartTimestamp: uint32(startTime.Unix() - 946684800),
+		EndTimestamp:   uint32(endTime.Unix() - 946684800),
+		Padding:        [4]byte{math.MaxUint8, math.MaxUint8, math.MaxUint8, math.MaxUint8},
+		CDTag:          common.ContestDetail,
+		TagSize:        136,
+		Unknown2:       1,
+		ContestID2:     contestId,
+		Status:         status,
+		Options:        options,
+		EntryCount:     entryCount,
+		Padding2:       [20]byte{},
+		Topic:          topic,
+		Description:    tempDescription,
 	}
 
-	return nil
+	return &detail, nil
+}
+
+func MakeContestDetailFile(detail *ContestDetail) error {
+	return common.Write(detail, fmt.Sprintf("contest/%d/con_detail%d.ces", detail.ContestID, detail.Language))
 }

@@ -88,6 +88,7 @@ func MakeContestInfos(pool *pgxpool.Pool, ctx context.Context) error {
 	}
 
 	var contests []Contest
+	var contestDetails []*ContestDetail
 	var index uint32 = 1
 	for rows.Next() {
 		contest := Contest{
@@ -179,13 +180,31 @@ func MakeContestInfos(pool *pgxpool.Pool, ctx context.Context) error {
 		}
 
 		if contest.Status != CCLosed && status != Waiting {
-			err = MakeContestDetail(pool, ctx, contest.ContestID, openTime, closeTime, description, contest.Status)
+			detail, err := MakeContestDetailData(pool, ctx, contest.ContestID, openTime, closeTime, description, contest.Status)
 			if err != nil {
 				return err
 			}
 
+			for i := uint32(0); i < 7; i++ {
+				detail.Language = i
+				err = MakeContestDetailFile(detail)
+				if err != nil {
+					return err
+				}
+			}
+
+			contestDetails = append(contestDetails, detail)
 			contests = append(contests, contest)
 			index++
+		}
+	}
+
+	// TODO: Localization for contests + mail
+	// For now we will just generate for all languages using English.
+	for i := uint32(0); i < 7; i++ {
+		err = MakeContestMail(contestDetails, i)
+		if err != nil {
+			return err
 		}
 	}
 

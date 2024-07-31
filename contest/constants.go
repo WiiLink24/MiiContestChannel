@@ -58,9 +58,9 @@ func DatabaseStatusToContestStatus(status DatabaseStatus) ContestStatus {
 type Option uint8
 
 const (
-	Worldwide        Option = 1
-	Thumbnail        Option = 2 << 0
-	Souvenir         Option = 2 << 1
-	NicknameChanging Option = 2 << 2
-	SpecialAward     Option = 2 << 3
+	Worldwide        Option = 1 << 0
+	Thumbnail        Option = 1 << 1
+	Souvenir         Option = 1 << 2
+	NicknameChanging Option = 1 << 3
+	SpecialAward     Option = 1 << 4
 )
