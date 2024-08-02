@@ -91,9 +91,6 @@ func MakeEntryLists(pool *pgxpool.Pool, ctx context.Context, contestId uint32) e
 
 		// Every list contains up to 10 miis.
 		index++
-		if len(miis)%10 == 0 {
-			index = 1
-		}
 	}
 
 	val := math.Ceil(float64(len(miis)) / 10)
