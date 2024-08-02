@@ -54,8 +54,8 @@ func readMiiList(slice []ContestMiiEntry) []ContestMiiEntry {
 }
 
 func removeSliceEntries(slice []ContestMiiEntry) []ContestMiiEntry {
-	if 10 >= len(slice) {
-		// If n is greater than or equal to the length of the slice, return an empty slice
+	if 10 > len(slice) {
+		// If n is greater than the length of the slice, return an empty slice
 		return []ContestMiiEntry{}
 	}
 
