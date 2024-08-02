@@ -42,7 +42,12 @@ func MakeContestDetailData(pool *pgxpool.Pool, ctx context.Context, contestId ui
 	var hasThumbnail bool
 	var hasSpecialAward bool
 	if status != COpen {
-		err := pool.QueryRow(ctx, GetNumberOfContestMiis, contestId).Scan(&entryCount, &hasThumbnail, &hasSpecialAward)
+		err := pool.QueryRow(ctx, GetContestTraits, contestId).Scan(&hasThumbnail, &hasSpecialAward)
+		if err != nil {
+			return nil, err
+		}
+
+		err = pool.QueryRow(ctx, GetNumberOfContestMiis, contestId).Scan(&entryCount)
 		if err != nil {
 			return nil, err
 		}
