@@ -5,7 +5,7 @@ const (
 	SetContestStatus            = `UPDATE contests SET status = $1 WHERE contest_id = $2`
 	EditContestEndTimeAndStatus = `UPDATE contests SET status = $1, close_time = $2 WHERE contest_id = $3`
 	GetContestMiis              = `SELECT artisan_id, mii_data FROM contest_miis WHERE contest_id = $1`
-	GetContestTraits            = `SELECT has_thumbnail, has_special_award FROM contests WHERE contest_id = 7 AND contests.status != 'closed' AND contests.status != 'waiting'`
+	GetContestTraits            = `SELECT has_thumbnail, has_special_award FROM contests WHERE contest_id = $1 AND contests.status != 'closed' AND contests.status != 'waiting'`
 	GetNumberOfContestMiis      = `SELECT COUNT(*) FROM contest_miis WHERE contest_id = $1`
 	GetContestThumbnailStatus   = `SELECT has_thumbnail, has_special_award FROM contests WHERE contest_id = $1`
 	UpdateContestMiiLikes       = `UPDATE contest_miis SET likes = 
