@@ -104,10 +104,30 @@ func MakeContestInfos(pool *pgxpool.Pool, ctx context.Context) error {
 		var closeTime *time.Time
 		var description string
 		var status DatabaseStatus
-		err = rows.Scan(&contest.ContestID, &openTime, &closeTime, &description, &status)
+		var hasThumbnail bool
+		var hasSpecialAward bool
+		var hasSouvenir bool
+		err = rows.Scan(&contest.ContestID, &openTime, &closeTime, &description, &status, &hasThumbnail, &hasSpecialAward, &hasSouvenir)
 		if err != nil {
 			return err
 		}
+
+		var options Option
+		options |= Worldwide
+		options |= NicknameChanging
+		if hasThumbnail {
+			options |= Thumbnail
+		}
+
+		if hasSpecialAward {
+			options |= SpecialAward
+		}
+
+		if hasSouvenir {
+			options |= Souvenir
+		}
+
+		contest.Options = uint8(options)
 
 		// Statuses are:
 		// - Waiting
