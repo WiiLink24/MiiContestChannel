@@ -41,6 +41,7 @@ func MakeContestDetailData(pool *pgxpool.Pool, ctx context.Context, contestId ui
 	var entryCount uint32
 	var hasThumbnail bool
 	var hasSpecialAward bool
+	var hasSouvenir bool
 	if status != COpen {
 		err := pool.QueryRow(ctx, GetContestTraits, contestId).Scan(&hasThumbnail, &hasSpecialAward)
 		if err != nil {
@@ -52,7 +53,7 @@ func MakeContestDetailData(pool *pgxpool.Pool, ctx context.Context, contestId ui
 			return nil, err
 		}
 	} else {
-		err := pool.QueryRow(ctx, GetContestThumbnailStatus, contestId).Scan(&hasThumbnail, &hasSpecialAward)
+		err := pool.QueryRow(ctx, GetContestThumbnailStatus, contestId).Scan(&hasThumbnail, &hasSpecialAward, &hasSouvenir)
 		if err != nil {
 			return nil, err
 		}
@@ -72,6 +73,10 @@ func MakeContestDetailData(pool *pgxpool.Pool, ctx context.Context, contestId ui
 
 	if hasSpecialAward {
 		options |= SpecialAward
+	}
+
+	if hasSouvenir {
+		options |= Souvenir
 	}
 
 	detail := ContestDetail{
