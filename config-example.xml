@@ -12,4 +12,5 @@
 
     <!-- Everything else -->
     <assetsPath>mc-assets</assetsPath>
+    <serverURL>http://localhost:9011</serverURL>
 </Config>
