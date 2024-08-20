@@ -127,16 +127,17 @@ func (l *Languages) GetLanguageFromJSON(language uint32) *Entry {
 
 func MakeAddition() error {
 	var marqueeText []byte
+	var baseText = []byte("WiiLink Mii Contest Channel!!!!")
 
 	resp, error := http.Get(common.GetConfig().ServerURL + "/assets/marquee/marquee.txt")
 	if error != nil {
-		marqueeText = []byte("WiiLink Mii Contest Channel!!!!")
+		marqueeText = baseText
 	} else {
 		defer resp.Body.Close()
 
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
-			marqueeText = []byte("WiiLink Mii Contest Channel!!!!")
+			marqueeText = baseText
 		} else {
 			marqueeText = body
 		}
