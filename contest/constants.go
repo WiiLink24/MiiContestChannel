@@ -1,7 +1,7 @@
 package contest
 
 const (
-	GetContests                 = `SELECT contest_id, open_time, close_time, english_name, status, has_thumbnail, has_special_award, has_souvenir FROM contests`
+	GetContests                 = `SELECT contest_id, open_time, close_time, english_name, status, has_thumbnail, has_special_award, has_souvenir FROM contests WHERE contests.status != 'closed'`
 	SetContestStatus            = `UPDATE contests SET status = $1 WHERE contest_id = $2`
 	EditContestEndTimeAndStatus = `UPDATE contests SET status = $1, close_time = $2 WHERE contest_id = $3`
 	GetContestMiis              = `SELECT artisan_id, mii_data FROM contest_miis WHERE contest_id = $1`
