@@ -15,26 +15,30 @@ import (
 	"os"
 	"slices"
 	"strconv"
+	"strings"
 	"time"
 	"unicode/utf16"
 )
 
 var (
 	ContestPosting = func(theme string) string {
-		return fmt.Sprintf("*******************************\r\nA New Contest is Under Way\r\n*******************************\r\n\r\nCare to test your Mii-making skills\r\nby designing a Mii on a particular\r\ntheme?\r\n\r\n\u25c6Contest Theme:\r\n%s\r\n\r\n\u25c6How to Submit an Entry\r\n1. Design a Mii in the Mii\r\n   Channel.\r\n2. Go to the Check Mii Out\r\n   Channel and submit your Mii.\r\n\r\n\r\nP.S. Check out https://miicontest.wiilink.ca,\r\nit's the official companion website\r\nfor the Check Mii Out Channel!\r\n\r\n\r\n----------------------------------\r\nThis message is regarding the\r\nCheck Mii Out Channel.\r\n\r\nIf you do not wish to receive further\r\ncommercial messages from WiiLink,\r\nplease click the opt-out icon on the \r\nupper-right corner of the screen.\r\n\r\nYou can opt out of either (1) \r\nmessages for the Check Mii Out\r\nChannel only or (2) all messages for\r\nall channels and games.", theme)
+		return fmt.Sprintf("*******************************\r\nA New Contest is Under Way\r\n*******************************\r\n\r\nCare to test your Mii-making skills\r\nby designing a Mii on a particular\r\ntheme?\r\n\r\n\u25c6 Contest Theme:\r\n%s\r\n\r\n\u25c6 How to Submit an Entry\r\n1. Design a Mii in the Mii\r\n   Channel.\r\n2. Go to the Check Mii Out\r\n   Channel and submit your Mii.\r\n\r\n\r\nP.S. Check out https://miicontest.wiilink.ca,\r\nit's the official companion website\r\nfor the Check Mii Out Channel!\r\n\r\n\r\n----------------------------------\r\nThis message is regarding the\r\nCheck Mii Out Channel.\r\n\r\nIf you do not wish to receive further\r\ncommercial messages from WiiLink,\r\nplease click the opt-out icon on the \r\nupper-right corner of the screen.\r\n\r\nYou can opt out of either (1) \r\nmessages for the Check Mii Out\r\nChannel only or (2) all messages for\r\nall channels and games.", theme)
 	}
 
 	ContestJudging = func(theme string) string {
-		return fmt.Sprintf("*******************************\r\nCome and Judge a Contest\r\n*******************************\r\n\r\nCome over to the Check Mii Out\r\nChannel and judge a few Miis\r\nfor a contest.\r\n\r\n\u25c6Contest Theme:\r\n%s\r\n\r\n\r\nP.S. Check out https://miicontest.wiilink.ca,\r\nit's the official companion website\r\nfor the Check Mii Out Channel!\r\n\r\n\r\n----------------------------------\r\n\r\n\r\nThis message is regarding the\r\nCheck Mii Out Channel.\r\n\r\nIf you do not wish to receive further\r\ncommercial messages from WiiLink,\r\nplease click the opt-out icon on the \r\nupper-right corner of the screen.\r\n\r\nYou can opt out of either (1) \r\nmessages for the Check Mii Out\r\nChannel only or (2) all messages for\r\nall channels and games.", theme)
+		return fmt.Sprintf("*******************************\r\nCome and Judge a Contest\r\n*******************************\r\n\r\nCome over to the Check Mii Out\r\nChannel and judge a few Miis\r\nfor a contest.\r\n\r\n\u25c6 Contest Theme:\r\n%s\r\n\r\n\r\nP.S. Check out https://miicontest.wiilink.ca,\r\nit's the official companion website\r\nfor the Check Mii Out Channel!\r\n\r\n\r\n----------------------------------\r\n\r\n\r\nThis message is regarding the\r\nCheck Mii Out Channel.\r\n\r\nIf you do not wish to receive further\r\ncommercial messages from WiiLink,\r\nplease click the opt-out icon on the \r\nupper-right corner of the screen.\r\n\r\nYou can opt out of either (1) \r\nmessages for the Check Mii Out\r\nChannel only or (2) all messages for\r\nall channels and games.", theme)
 	}
 
 	ContestResults = func(theme string) string {
-		return fmt.Sprintf("*******************************\r\nContest Results\r\n*******************************\r\n\r\nWe've tallied up all the votes, and\r\nthe winners for this contest have\r\nbeen decided!\r\n\r\n\u25c6Contest Theme:\r\n%s\r\n\r\n\r\nP.S. Check out https://miicontest.wiilink.ca,\r\nit's the official companion website\r\nfor the Check Mii Out Channel!\r\n\r\n\r\n----------------------------------\r\nThis message is regarding the\r\nCheck Mii Out Channel.\r\n\r\nIf you do not wish to receive further\r\ncommercial messages from WiiLink,\r\nplease click the opt-out icon on the \r\nupper-right corner of the screen.\r\n\r\nYou can opt out of either (1) \r\nmessages for the Check Mii Out\r\nChannel only or (2) all messages for\r\nall channels and games.", theme)
+		return fmt.Sprintf("*******************************\r\nContest Results\r\n*******************************\r\n\r\nWe've tallied up all the votes, and\r\nthe winners for this contest have\r\nbeen decided!\r\n\r\n\u25c6 Contest Theme:\r\n%s\r\n\r\n\r\nP.S. Check out https://miicontest.wiilink.ca,\r\nit's the official companion website\r\nfor the Check Mii Out Channel!\r\n\r\n\r\n----------------------------------\r\nThis message is regarding the\r\nCheck Mii Out Channel.\r\n\r\nIf you do not wish to receive further\r\ncommercial messages from WiiLink,\r\nplease click the opt-out icon on the \r\nupper-right corner of the screen.\r\n\r\nYou can opt out of either (1) \r\nmessages for the Check Mii Out\r\nChannel only or (2) all messages for\r\nall channels and games.", theme)
 	}
 
 	key = []byte{0xBE, 0x37, 0x15, 0xC3, 0x08, 0xF3, 0x41, 0xA8, 0xF1, 0x6F, 0x0E, 0xF4, 0xFB, 0x14, 0x97, 0xAF}
 
 	iv = []byte{70, 70, 20, 40, 143, 110, 36, 6, 184, 107, 135, 239, 96, 45, 80, 151}
+
+	// CMOCBase64 is the string literal 'Check Mii Out Channel' encoded in UTF-16BE then base64.
+	CMOCBase64 = "AEMAaABlAGMAawAgAE0AaQBpACAATwB1AHQAIABDAGgAYQBuAG4AZQBs="
 
 	//go:embed cmoc_letter.arc
 	cmocLetterScript []byte
@@ -65,8 +69,8 @@ func MakeContestMail(contests []*ContestDetail, languageCode uint32) error {
 
 	contestDataPart := nwc24.NewMultipart()
 	contestDataPart.AddFile(fmt.Sprintf("con_detail%d.bin", languageCode), latestContest.ToBytes(latestContest), nwc24.Binary)
-
 	message.AddMultipart(contestDataPart)
+
 	if ((latestContest.Options >> 1) & 1) == 1 {
 		thumb, err := os.ReadFile(fmt.Sprintf("%s/contest/%d/thumbnail.jpg", common.GetConfig().AssetsPath, latestContest.ContestID))
 		if err != nil {
@@ -92,7 +96,7 @@ func MakeContestMail(contests []*ContestDetail, languageCode uint32) error {
 	messages = append(messages, message)
 	for i, contest := range contests {
 		currBoundary := fmt.Sprintf("----=_CMOC_Contest_%d", i+1)
-		currMessageBody := GetMessageForStatus(contest.Status, string(contest.Description[:]))
+		currMessageBody := GetMessageForStatus(contest.Status, strings.ReplaceAll(string(contest.Description[:]), "\x00", ""))
 
 		currMessage := nwc24.NewMessage(from, to)
 		currMessage.SetContentType(nwc24.MultipartMixed)
@@ -101,6 +105,7 @@ func MakeContestMail(contests []*ContestDetail, languageCode uint32) error {
 		currMessage.SetTag("X-Wii-MB-OptOut", "1")
 		currMessage.SetTag("X-Wii-MB-NoReply", "1")
 		currMessage.SetTag("X-Wii-AppID", "3-48415041-3031")
+		currMessage.SetTag("X-Wii-AltName", CMOCBase64)
 
 		messagePart := nwc24.NewMultipart()
 		messagePart.SetText(currMessageBody, nwc24.UTF16BE)
@@ -109,6 +114,18 @@ func MakeContestMail(contests []*ContestDetail, languageCode uint32) error {
 		letterPart.AddFile("cmoc_letterform.arc", cmocLetterScript, nwc24.WiiMessageBoard)
 
 		currMessage.AddMultipart(messagePart, letterPart)
+
+		if ((contest.Options >> 1) & 1) == 1 {
+			thumb, err := os.ReadFile(fmt.Sprintf("%s/contest/%d/thumbnail.jpg", common.GetConfig().AssetsPath, contest.ContestID))
+			if err != nil {
+				return err
+			}
+
+			imagePart := nwc24.NewMultipart()
+			imagePart.AddFile(fmt.Sprintf("contest%d.jpg", i), thumb, nwc24.Jpeg)
+			currMessage.AddMultipart(imagePart)
+		}
+
 		messages = append(messages, currMessage)
 	}
 
