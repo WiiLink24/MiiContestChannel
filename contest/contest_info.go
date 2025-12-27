@@ -107,7 +107,8 @@ func MakeContestInfos(pool *pgxpool.Pool, ctx context.Context) error {
 		var hasThumbnail bool
 		var hasSpecialAward bool
 		var hasSouvenir bool
-		err = rows.Scan(&contest.ContestID, &openTime, &closeTime, &description, &status, &hasThumbnail, &hasSpecialAward, &hasSouvenir)
+		var sentMail bool
+		err = rows.Scan(&contest.ContestID, &openTime, &closeTime, &description, &status, &hasThumbnail, &hasSpecialAward, &hasSouvenir, &sentMail)
 		if err != nil {
 			return err
 		}
@@ -137,7 +138,6 @@ func MakeContestInfos(pool *pgxpool.Pool, ctx context.Context) error {
 		// - Closed
 		if status == Waiting && openTime.Before(time.Now().UTC()) && closeTime.After(time.Now().UTC()) {
 			// Contest is ready to be opened.
-			// TODO: Send the announcement to the message board
 			_, err = pool.Exec(ctx, SetContestStatus, Open, contest.ContestID)
 			if err != nil {
 				return err
@@ -145,6 +145,7 @@ func MakeContestInfos(pool *pgxpool.Pool, ctx context.Context) error {
 
 			contest.Status = COpen
 			status = Open
+			sentMail = false
 		} else if openTime.Before(time.Now()) && closeTime.Before(time.Now()) {
 			if status == Open {
 				// Set to judging. Contest will be open to judging for 7 days.
@@ -155,6 +156,7 @@ func MakeContestInfos(pool *pgxpool.Pool, ctx context.Context) error {
 				}
 
 				contest.Status = CJudging
+				sentMail = false
 
 				// Create the entry lists
 				err = MakeEntryLists(pool, ctx, contest.ContestID)
@@ -182,6 +184,7 @@ func MakeContestInfos(pool *pgxpool.Pool, ctx context.Context) error {
 				}
 
 				contest.Status = CResults
+				sentMail = false
 			} else if status == Results {
 				_, err = pool.Exec(ctx, SetContestStatus, Closed, contest.ContestID)
 				if err != nil {
@@ -213,8 +216,17 @@ func MakeContestInfos(pool *pgxpool.Pool, ctx context.Context) error {
 				}
 			}
 
-			contestDetails = append(contestDetails, detail)
-			contests = append(contests, contest)
+			if !sentMail {
+				contestDetails = append(contestDetails, detail)
+				contests = append(contests, contest)
+
+				// Set sent mail flag to true.
+				_, err = pool.Exec(ctx, SetContestMailSent, true, contest.ContestID)
+				if err != nil {
+					return err
+				}
+			}
+
 			index++
 		}
 	}
@@ -222,6 +234,10 @@ func MakeContestInfos(pool *pgxpool.Pool, ctx context.Context) error {
 	// TODO: Localization for contests + mail
 	// For now we will just generate for all languages using English.
 	for i := uint32(0); i < 7; i++ {
+		if contestDetails == nil {
+			break
+		}
+
 		err = MakeContestMail(contestDetails, i)
 		if err != nil {
 			return err
