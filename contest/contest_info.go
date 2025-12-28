@@ -218,7 +218,6 @@ func MakeContestInfos(pool *pgxpool.Pool, ctx context.Context) error {
 
 			if !sentMail {
 				contestDetails = append(contestDetails, detail)
-				contests = append(contests, contest)
 
 				// Set sent mail flag to true.
 				_, err = pool.Exec(ctx, SetContestMailSent, true, contest.ContestID)
@@ -227,6 +226,7 @@ func MakeContestInfos(pool *pgxpool.Pool, ctx context.Context) error {
 				}
 			}
 
+			contests = append(contests, contest)
 			index++
 		}
 	}
