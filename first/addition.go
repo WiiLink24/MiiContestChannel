@@ -5,8 +5,11 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
-	"github.com/WiiLink24/MiiContestChannel/common"
+	"io"
 	"math"
+	"net/http"
+
+	"github.com/WiiLink24/MiiContestChannel/common"
 )
 
 type Root struct {
@@ -123,7 +126,23 @@ func (l *Languages) GetLanguageFromJSON(language uint32) *Entry {
 }
 
 func MakeAddition() error {
-	marqueeText := []byte("WiiLink Mii Contest Channel!!!!")
+	var marqueeText []byte
+	var baseText = []byte("WiiLink Mii Contest Channel!!!!")
+
+	resp, error := http.Get(common.GetConfig().ServerURL + "/assets/marquee/marquee.txt")
+	if error != nil {
+		marqueeText = baseText
+	} else {
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			marqueeText = baseText
+		} else {
+			marqueeText = body
+		}
+	}
+
 	var actual [1536]byte
 	copy(actual[:], marqueeText)
 
