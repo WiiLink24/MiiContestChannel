@@ -92,7 +92,7 @@ func (w *writerState) Write(path string) error {
 
 	// Create directories if they don't exist
 	filePath := fmt.Sprintf("%s/%s", GetConfig().AssetsPath, path)
-	err := os.MkdirAll(filepath.Dir(filePath), 0755)
+	err := os.MkdirAll(filepath.Dir(filePath), 0775)
 	if err != nil {
 		return err
 	}
